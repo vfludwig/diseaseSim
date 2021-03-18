@@ -14,8 +14,9 @@ fluIncubationTime = 4
 fluHospitalizationRate = .02
 fluFatalityRate = .01
 
-totalPopulation = ###input from website
-diseaseType = ###input from website
+###input from website
+totalPopulation = 0
+diseaseType = 0
 
 daycount = 0
 infected = 0
