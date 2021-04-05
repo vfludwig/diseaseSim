@@ -20,14 +20,14 @@ class Person():
 def initiateSim():
     numPeople = int(input("Population: "))
     startingImmunity = int(input("Percentage of people with natural immunity: "))
-    startingInfecters = int(input("How many people will be infectious at t=0: "))
+    startingInfecters = int(input("Amount of people infectous on day 1: "))
     for x in range(0,numPeople):
         peopleDictionary.append(Person(startingImmunity))
     for x in range(0,startingInfecters):
         peopleDictionary[random.randint(0,len(peopleDictionary)-1)].contagiousness = int((norm.rvs(size=1,loc=0.5,scale=0.15)[0]*10).round(0)*10)
     daysContagious = int(input("How many days contagious: "))
-    lockdownDay = int(input("Day for lockdown to be enforced: "))
-    maskDay = int(input("Day for masks to be used: "))
+    lockdownDay = int(input("Start of lockdown: "))
+    maskDay = int(input("Start of mask mandate: "))
     return daysContagious, lockdownDay, maskDay
 def runDay(daysContagious, lockdown):
     #this section simulates the spread, so it only operates on contagious people, thus:
@@ -45,14 +45,14 @@ def runDay(daysContagious, lockdown):
             friendInQuestion = peopleDictionary[random.randint(0,len(peopleDictionary)-1)]
             if random.randint(0,100)<person.contagiousness and friendInQuestion.contagiousness == 0 and friendInQuestion.immunity==False:
                 friendInQuestion.contagiousness = int((norm.rvs(size=1,loc=0.5,scale=0.15)[0]*10).round(0)*10)
-                print(peopleDictionary.index(person), " >>> ", peopleDictionary.index(friendInQuestion))
+                print("Person ", peopleDictionary.index(person), " infected Person ", peopleDictionary.index(friendInQuestion))
             
     for person in [person for person in peopleDictionary if person.contagiousness>0]:
         person.contagiousDays += 1
         if person.contagiousDays > daysContagious:
             person.immunity = True
             person.contagiousness = 0
-            print("|||", peopleDictionary.index(person), " |||")
+            print("Person ", peopleDictionary.index(person), " gained immunity")
             
 lockdown = False
 daysContagious, lockdownDay, maskDay = initiateSim()
