@@ -144,7 +144,7 @@ saveFile = open("pandemicsave3.txt", "a")
 for x in range(0,100):
     if x==lockdownDay:
         lockdown = True
-        
+        #add lockdown and mask end days
     if x == maskDay:
         for person in peopleDictionary:
             person.wearMask()
