@@ -5,7 +5,7 @@ import time
 
 frame = tk.Tk()
 frame.title("DiseaseSim")
-frame.geometry('400x400')
+frame.geometry('750x350')
 
 def printInput():
     global inPop, inImm, inInfect, inContag, inLock, inMask
@@ -15,6 +15,7 @@ def printInput():
     inContag = inputtxtContag.get(1.0, "end-1c")
     inLock = inputtxtLock.get(1.0, "end-1c")
     inMask = inputtxtMask.get(1.0, "end-1c")
+    lbl.config(text = "Input Saved. You can close this window now.")
 
 popLabel = tk.Label(text="This is a Graphical Disease Simulator. Based on the data inputted, a graph showing the infection over 100 days will be created.")
 popLabel.pack()
