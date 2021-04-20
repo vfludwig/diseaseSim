@@ -1,6 +1,95 @@
 from scipy.stats import norm
+import tkinter as tk
 import random
 import time
+
+frame = tk.Tk()
+frame.title("DiseaseSim")
+frame.geometry('400x400')
+
+def printInput():
+    global inPop, inImm, inInfect, inContag, inLock, inMask
+    inPop = inputtxtPop.get(1.0, "end-1c")
+    inImm = inputtxtImm.get(1.0, "end-1c")
+    inInfect = inputtxtInfect.get(1.0, "end-1c")
+    inContag = inputtxtContag.get(1.0, "end-1c")
+    inLock = inputtxtLock.get(1.0, "end-1c")
+    inMask = inputtxtMask.get(1.0, "end-1c")
+
+popLabel = tk.Label(text="This is a Graphical Disease Simulator. Based on the data inputted, a graph showing the infection over 100 days will be created.")
+popLabel.pack()
+
+popLabel = tk.Label(text="Population Size:")
+popLabel.pack()
+
+inputtxtPop = tk.Text(frame,
+                    height = 1,
+                    width = 10)
+
+inputtxtPop.pack()
+
+immLabel = tk.Label(text="Immunity Percentage:")
+immLabel.pack()
+
+inputtxtImm = tk.Text(frame,
+                    height = 1,
+                    width = 10)
+
+inputtxtImm.pack()
+
+infectLabel = tk.Label(text="Starting Number of Infected:")
+infectLabel.pack()
+
+inputtxtInfect = tk.Text(frame,
+                    height = 1,
+                    width = 10)
+
+inputtxtInfect.pack()
+
+contagLabel = tk.Label(text="Days Contagious:")
+contagLabel.pack()
+
+inputtxtContag = tk.Text(frame,
+                    height = 1,
+                    width = 10)
+
+inputtxtContag.pack()
+
+lockLabel = tk.Label(text="Start of Lockdown (0-100):")
+lockLabel.pack()
+
+inputtxtLock = tk.Text(frame,
+                    height = 1,
+                    width = 10)
+
+inputtxtLock.pack()
+
+maskLabel = tk.Label(text="Start of Mask Mandate (0-100):")
+maskLabel.pack()
+
+inputtxtMask = tk.Text(frame,
+                    height = 1,
+                    width = 10)
+
+inputtxtMask.pack()
+
+printButton = tk.Button(frame,
+                        text = "Enter Inputs",
+                        command = printInput)
+
+printButton.pack()
+
+lbl = tk.Label(frame, text = "")
+lbl.pack()
+frame.mainloop()
+
+numPeople = int(float(inPop))
+startingImmunity = int(float(inImm))
+startingInfecters = int(float(inInfect))
+daysContagious = int(float(inContag))
+lockdownDay = int(float(inLock))
+maskDay = int(float(inMask))
+
 peopleDictionary = []
 #simulation of a single person
 class Person():
@@ -18,16 +107,10 @@ class Person():
         self.contagiousness /= 2
         
 def initiateSim():
-    numPeople = int(input("Population: "))
-    startingImmunity = int(input("Percentage of people with natural immunity: "))
-    startingInfecters = int(input("Amount of people infectous on day 1: "))
     for x in range(0,numPeople):
         peopleDictionary.append(Person(startingImmunity))
     for x in range(0,startingInfecters):
         peopleDictionary[random.randint(0,len(peopleDictionary)-1)].contagiousness = int((norm.rvs(size=1,loc=0.5,scale=0.15)[0]*10).round(0)*10)
-    daysContagious = int(input("How many days contagious: "))
-    lockdownDay = int(input("Start of lockdown: "))
-    maskDay = int(input("Start of mask mandate: "))
     return daysContagious, lockdownDay, maskDay
 def runDay(daysContagious, lockdown):
     #this section simulates the spread, so it only operates on contagious people, thus:
