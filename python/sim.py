@@ -1,4 +1,5 @@
 from scipy.stats import norm
+import matplotlib.pyplot as plt
 import tkinter as tk
 import random
 import time
@@ -139,6 +140,7 @@ def runDay(daysContagious, lockdown):
             print("Person ", peopleDictionary.index(person), " gained immunity")
             
 lockdown = False
+contagiousList = []
 daysContagious, lockdownDay, maskDay = initiateSim()
 saveFile = open("pandemicsave3.txt", "a")
 for x in range(0,100):
@@ -151,7 +153,16 @@ for x in range(0,100):
             
     print("DAY ", x)
     runDay(daysContagious,lockdown)
-    write = str(len([person for person in peopleDictionary if person.contagiousness>0])) + "\n"
+    numContagious = len([person for person in peopleDictionary if person.contagiousness>0])
+    contagiousList.append(numContagious)
+    write = str(numContagious) + "\n"
     saveFile.write(write)
-    print(len([person for person in peopleDictionary if person.contagiousness>0]), " people are contagious on this day.")
+    print((numContagious), " people are contagious on this day.")
+
+plt.xlabel('Day')
+plt.ylabel('Number of Contagious')
+plt.plot(range(1, 101), contagiousList)
+plt.show()
+
+
 saveFile.close()
