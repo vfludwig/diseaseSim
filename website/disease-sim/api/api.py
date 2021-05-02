@@ -90,9 +90,9 @@ def sim():
     startingInfecters = int(float(content['startInfected']))
     daysContagious = int(float(content['daysContagious']))
     lockdownDay = int(float(content['lockdownStart']))
-    lockdownDayEnd = int(float(100))
+    lockdownDayEnd = int(float(content['lockdownEnd']))
     maskDay = int(float(content['maskStart']))
-    maskDayEnd = int(float(100))
+    maskDayEnd = int(float(content['maskEnd']))
 
     lockdown = False
     contagiousList = []
