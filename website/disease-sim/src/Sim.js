@@ -4,7 +4,7 @@ import './styles.css';
 import {AppBar, Button, TextField, Toolbar, Typography, withStyles} from "@material-ui/core";
 import CanvasJSReact from "./canvasjs.react";
 
-const CanvasJSChart = CanvasJSReact.CanvasJSChart;
+const CanvasJSChart = CanvasJSReact.CanvasJSChart
 
 const styles = {
     body: {
@@ -38,16 +38,20 @@ class Sim extends React.Component {
             startInfected: "",
             daysContagious: "",
             lockdownStart: "",
+            lockdownEnd: "",
             maskStart: "",
+            maskEnd: "",
             dataPoints: [],
             chartSize: 0
         }
+        this.invalidChars = "`-=~!@#$%^&*()_+qwertyuiop[]\asdfghjkl;'zxcvbnm,./QWERTYUIOP{}|ASDFGHJKL:ZXCVBNM<>?".split("")
     }
 
     componentDidMount() {
         document.title = "Disease Sim";
         this.handleResize();
         window.addEventListener("resize", this.handleResize);
+        console.log(this.invalidChars)
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -82,6 +86,16 @@ class Sim extends React.Component {
         }
     }
 
+    onLockdownEndChange = (e) => {
+        const value = e.target.value.replace(/[^0-9]/g, "");
+        if (value >= 0 && value <= 100) {
+            this.setState({lockdownEnd: value});
+            this.checkFilled();
+        } else {
+            this.setState({lockdownEnd: this.state.lockdownEnd});
+        }
+    }
+
     onMaskChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, "");
         if (value >= 0 && value <= 100 && !value.includes("e")) {
@@ -109,6 +123,10 @@ class Sim extends React.Component {
             this.setState({dataPoints: dataArray});
         });
         this.chart.render()
+    }
+
+    onKeyDown = (e) => {
+        (this.invalidChars.includes(e.key) || e.key === '"') && e.preventDefault()
     }
 
     render() {
@@ -147,12 +165,16 @@ class Sim extends React.Component {
                             style={{
                                 marginRight: "2em"
                             }}
+                            inputProps={{
+                                pattern: "[0-9]",
+                                type: "number"
+                            }}
                             name="population"
                             label="Population Size"
                             type="number"
                             value={this.state.population}
                             onChange={this.onNumberChange}
-                            onKeyDown={e => (e.key === "E" || e.key === "e" || e.key === ".") && e.preventDefault()}
+                            onKeyDown={this.onKeyDown}
                         />
                         <TextField
                             style={{
@@ -163,7 +185,7 @@ class Sim extends React.Component {
                             type="number"
                             value={this.state.immunity}
                             onChange={this.onNumberChange}
-                            onKeyDown={e => (e.key === "E" || e.key === "e" || e.key === ".") && e.preventDefault()}
+                            onKeyDown={this.onKeyDown}
                         />
                         <TextField
                             style={{
@@ -174,7 +196,7 @@ class Sim extends React.Component {
                             type="number"
                             value={this.state.startInfected}
                             onChange={this.onNumberChange}
-                            onKeyDown={e => (e.key === "E" || e.key === "e" || e.key === ".") && e.preventDefault()}
+                            onKeyDown={this.onKeyDown}
                         />
                         <TextField
                             style={{
@@ -185,7 +207,7 @@ class Sim extends React.Component {
                             type="number"
                             value={this.state.daysContagious}
                             onChange={this.onNumberChange}
-                            onKeyDown={e => (e.key === "E" || e.key === "e" || e.key === ".") && e.preventDefault()}
+                            onKeyDown={this.onKeyDown}
                         />
                         <TextField
                             style={{
@@ -202,7 +224,7 @@ class Sim extends React.Component {
                                 "min": 0,
                                 "max": 100
                             }}
-                            onKeyDown={e => (e.key === "E" || e.key === "e" || e.key === ".") && e.preventDefault()}
+                            onKeyDown={this.onKeyDown}
                         />
                         <TextField
                             style={{
@@ -219,7 +241,7 @@ class Sim extends React.Component {
                                 "min": 0,
                                 "max": 100
                             }}
-                            onKeyDown={e => (e.key === "E" || e.key === "e" || e.key === ".") && e.preventDefault()}
+                            onKeyDown={this.onKeyDown}
                         />
                     </div>
                     <div className={classes.inputs}>
