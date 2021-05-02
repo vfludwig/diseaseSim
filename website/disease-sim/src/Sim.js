@@ -25,7 +25,6 @@ const styles = {
     display: {
         marginTop: "16px",
         flexGrow: 100,
-        backgroundColor: "#d8d8d8"
     }
 };
 
@@ -40,12 +39,15 @@ class Sim extends React.Component {
             daysContagious: "",
             lockdownStart: "",
             maskStart: "",
-            dataPoints: []
+            dataPoints: [],
+            chartSize: 0
         }
     }
 
     componentDidMount() {
-        document.title = "Disease Sim"
+        document.title = "Disease Sim";
+        this.handleResize();
+        window.addEventListener("resize", this.handleResize);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -58,10 +60,16 @@ class Sim extends React.Component {
         return (this.state.population && this.state.immunity && this.state.startInfected && this.state.daysContagious && this.state.lockdownStart && this.state.maskStart);
     }
 
+    handleResize = (e) => {
+        const chartContainer = document.getElementById('chartContainer').clientHeight;
+        this.setState({chartSize: chartContainer});
+    }
+
     onNumberChange = (e) => {
-        const value = e.target.value.replace(/[^0-9]/g, "");
+        const value = e.target.value.replace(/[^0-9]+/g, "");
         this.setState({[e.target.name]: value});
         this.checkFilled();
+        console.log(this.state[e.target.name])
     }
 
     onLockdownChange = (e) => {
@@ -106,6 +114,7 @@ class Sim extends React.Component {
     render() {
         const {classes} = this.props;
         const options = {
+            height: this.state.chartSize - 1,
             animationEnabled: true,
             theme: "light1",
             title: {
@@ -217,7 +226,7 @@ class Sim extends React.Component {
                         <Button variant="contained" color="primary" onClick={this.startSim}
                                 disabled={this.state.startDisabled}>Start</Button>
                     </div>
-                    <div className={classes.display}>
+                    <div id="chartContainer" className={classes.display}>
                         <CanvasJSChart
                             key={this.state.dataPoints.toString()}
                             options={options}
