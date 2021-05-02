@@ -2,6 +2,9 @@ import React from 'react';
 import './App.css';
 import './styles.css';
 import {AppBar, Button, TextField, Toolbar, Typography, withStyles} from "@material-ui/core";
+import CanvasJSReact from "./canvasjs.react";
+
+const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 const styles = {
     body: {
@@ -36,7 +39,8 @@ class Sim extends React.Component {
             startInfected: "",
             daysContagious: "",
             lockdownStart: "",
-            maskStart: ""
+            maskStart: "",
+            dataPoints: []
         }
     }
 
@@ -81,11 +85,46 @@ class Sim extends React.Component {
     }
 
     startSim = () => {
-        console.log("Start sim");
+        fetch("/run-sim", {
+            method: "POST",
+            cache: "no-cache",
+            headers: {
+                "content_type": "application/json"
+            },
+            body: JSON.stringify(this.state)
+        }).then(res => res.json()).then(data => {
+            let dataArray = [];
+            let i = 0;
+            for (i; i < data.contagiousList.length; i++) {
+                dataArray.push({"x": i, "y": data.contagiousList[i]})
+            }
+            this.setState({dataPoints: dataArray});
+        });
+        this.chart.render()
     }
 
     render() {
         const {classes} = this.props;
+        const options = {
+            animationEnabled: true,
+            theme: "light1",
+            title: {
+                text: ""
+            },
+            axisY: {
+                title: "Number of Contagious",
+                minimum: 0,
+                maximum: this.state.population
+            },
+            axisX: {
+                title: "Days"
+            },
+            data: [{
+                type: "line",
+                toolTipContent: "Day {x}: Number of Contagious = {y}",
+                dataPoints: this.state.dataPoints
+            }]
+        }
         return (
             <React.Fragment>
                 <AppBar position="static">
@@ -179,7 +218,11 @@ class Sim extends React.Component {
                                 disabled={this.state.startDisabled}>Start</Button>
                     </div>
                     <div className={classes.display}>
-
+                        <CanvasJSChart
+                            key={this.state.dataPoints.toString()}
+                            options={options}
+                            onRef={ref => this.chart = ref}
+                        />
                     </div>
                 </div>
             </React.Fragment>
