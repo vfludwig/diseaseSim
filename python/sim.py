@@ -6,16 +6,18 @@ import time
 
 frame = tk.Tk()
 frame.title("DiseaseSim")
-frame.geometry('750x350')
+frame.geometry('750x400')
 
 def printInput():
-    global inPop, inImm, inInfect, inContag, inLock, inMask
+    global inPop, inImm, inInfect, inContag, inLock, inLockEnd, inMask, inMaskEnd
     inPop = inputtxtPop.get(1.0, "end-1c")
     inImm = inputtxtImm.get(1.0, "end-1c")
     inInfect = inputtxtInfect.get(1.0, "end-1c")
     inContag = inputtxtContag.get(1.0, "end-1c")
     inLock = inputtxtLock.get(1.0, "end-1c")
+    inLockEnd = inputtxtLock.get(1.0, "end-1c")
     inMask = inputtxtMask.get(1.0, "end-1c")
+    inMaskEnd = inputtxtMask.get(1.0, "end-1c")
     lbl.config(text = "Input Saved. You can close this window now.")
 
 popLabel = tk.Label(text="This is a Graphical Disease Simulator. Based on the data inputted, a graph showing the infection over 100 days will be created.")
@@ -66,6 +68,15 @@ inputtxtLock = tk.Text(frame,
 
 inputtxtLock.pack()
 
+lockEndLabel = tk.Label(text="End of Lockdown (0-100):")
+lockEndLabel.pack()
+
+inputtxtLockEnd = tk.Text(frame,
+                    height = 1,
+                    width = 10)
+
+inputtxtLockEnd.pack()
+
 maskLabel = tk.Label(text="Start of Mask Mandate (0-100):")
 maskLabel.pack()
 
@@ -74,6 +85,15 @@ inputtxtMask = tk.Text(frame,
                     width = 10)
 
 inputtxtMask.pack()
+
+maskEndLabel = tk.Label(text="End of Mask Mandate (0-100):")
+maskEndLabel.pack()
+
+inputtxtMaskEnd = tk.Text(frame,
+                    height = 1,
+                    width = 10)
+
+inputtxtMaskEnd.pack()
 
 printButton = tk.Button(frame,
                         text = "Enter Inputs",
@@ -90,7 +110,9 @@ startingImmunity = int(float(inImm))
 startingInfecters = int(float(inInfect))
 daysContagious = int(float(inContag))
 lockdownDay = int(float(inLock))
+lockdownDayEnd = int(float(inLockEnd))
 maskDay = int(float(inMask))
+maskDayEnd = int(float(inMaskEnd))
 
 peopleDictionary = []
 #simulation of a single person
@@ -107,6 +129,8 @@ class Person():
         self.friends = int((norm.rvs(size=1,loc=0.5,scale=0.15)[0]*10).round(0))
     def wearMask(self):
         self.contagiousness /= 2
+    def removeMask(self):
+        self.contagiousness *= 2
         
 def initiateSim():
     for x in range(0,numPeople):
@@ -142,21 +166,25 @@ def runDay(daysContagious, lockdown):
 lockdown = False
 contagiousList = []
 daysContagious, lockdownDay, maskDay = initiateSim()
-saveFile = open("pandemicsave3.txt", "a")
+#saveFile = open("pandemicsave3.txt", "a")
 for x in range(0,100):
     if x==lockdownDay:
         lockdown = True
-        #add lockdown and mask end days
     if x == maskDay:
         for person in peopleDictionary:
             person.wearMask()
+    if x==lockdownDayEnd:
+        lockdown = False
+    if x == maskDayEnd:
+        for person in peopleDictionary:
+            person.removeMask()
             
     print("DAY ", x)
     runDay(daysContagious,lockdown)
     numContagious = len([person for person in peopleDictionary if person.contagiousness>0])
     contagiousList.append(numContagious)
     write = str(numContagious) + "\n"
-    saveFile.write(write)
+    #saveFile.write(write)
     print((numContagious), " people are contagious on this day.")
 
 plt.xlabel('Day')
@@ -165,4 +193,4 @@ plt.plot(range(1, 101), contagiousList)
 plt.show()
 
 
-saveFile.close()
+#saveFile.close()
