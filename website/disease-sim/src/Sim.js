@@ -54,13 +54,18 @@ class Sim extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.checkFilled() && prevState.startDisabled) {
+        if ((this.state.population && this.state.immunity && this.state.startInfected && this.state.daysContagious && this.state.lockdownStart && this.state.maskStart) && prevState.startDisabled) {
             this.setState({startDisabled: false})
         }
     }
 
     checkFilled() {
-        return (this.state.population && this.state.immunity && this.state.startInfected && this.state.daysContagious && this.state.lockdownStart && this.state.maskStart);
+        if ((this.state.population && this.state.immunity && this.state.startInfected && this.state.daysContagious && this.state.lockdownStart && this.state.maskStart) === 1) {
+            return (this.state.population && this.state.immunity && this.state.startInfected && this.state.daysContagious && this.state.lockdownStart && this.state.maskStart);
+        } else {
+            this.setState({startDisabled: true})
+            return false
+        }
     }
 
     handleResize = (e) => {
@@ -72,6 +77,26 @@ class Sim extends React.Component {
         const value = e.target.value.replace(/[^0-9]+/g, "");
         this.setState({[e.target.name]: value});
         this.checkFilled();
+    }
+
+    onPopulationChange = (e) => {
+        const value = e.target.value.replace(/[^0-9]+/g, "");
+        let intValue = parseInt(value);
+        this.setState({population: value});
+        if (parseInt(value) < this.state.startInfected) {
+            this.setState({startInfected: intValue})
+        }
+        this.checkFilled();
+    }
+
+    onInfectedChange = (e) => {
+        const value = e.target.value.replace(/[^0-9]+/g, "");
+        let intValue = parseInt(value);
+        if (intValue > this.state.population) {
+            this.setState({population: intValue, startInfected: intValue})
+        } else {
+            this.setState({startInfected: value})
+        }
     }
 
     onLockdownChange = (e) => {
@@ -201,13 +226,14 @@ class Sim extends React.Component {
                             }}
                             inputProps={{
                                 pattern: "[0-9]",
-                                type: "number"
+                                type: "number",
+                                min: 1
                             }}
                             name="population"
                             label="Population Size"
                             type="number"
                             value={this.state.population}
-                            onChange={this.onNumberChange}
+                            onChange={this.onPopulationChange}
                             onKeyDown={this.onKeyDown}
                         />
                         <TextField
@@ -225,11 +251,14 @@ class Sim extends React.Component {
                             style={{
                                 marginRight: "2em"
                             }}
+                            inputProps={{
+                                min: 1
+                            }}
                             name="startInfected"
                             label="Starting # of Infected"
                             type="number"
                             value={this.state.startInfected}
-                            onChange={this.onNumberChange}
+                            onChange={this.onInfectedChange}
                             onKeyDown={this.onKeyDown}
                         />
                         <TextField
