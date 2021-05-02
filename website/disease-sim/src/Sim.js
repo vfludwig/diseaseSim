@@ -51,7 +51,6 @@ class Sim extends React.Component {
         document.title = "Disease Sim";
         this.handleResize();
         window.addEventListener("resize", this.handleResize);
-        console.log(this.invalidChars)
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -73,7 +72,6 @@ class Sim extends React.Component {
         const value = e.target.value.replace(/[^0-9]+/g, "");
         this.setState({[e.target.name]: value});
         this.checkFilled();
-        console.log(this.state[e.target.name])
     }
 
     onLockdownChange = (e) => {
@@ -84,42 +82,62 @@ class Sim extends React.Component {
         } else {
             this.setState({lockdownStart: this.state.lockdownStart});
         }
-        if (value >= this.state.lockdownEnd) {
+        if (parseInt(value) >= this.state.lockdownEnd) {
             this.setState({lockdownEnd: parseInt(value) + 1})
         }
     }
 
     onLockdownEndChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, "");
-        if (value >= 0 && value <= 100) {
+        let intValue = parseInt(value);
+        if (intValue <= this.state.lockdownStart) {
+            let newVal = parseInt(value) - 1
+            if (newVal < 0) {
+                this.setState({lockdownStart: "", lockdownEnd: ""})
+            } else {
+                this.setState({lockdownStart: newVal, lockdownEnd: value})
+            }
+        }else if (value === "") {
+            this.setState({lockdownStart: "", lockdownEnd: ""})
+        } else if (intValue >= 0 && intValue <= 100) {
             this.setState({lockdownEnd: value});
-            this.checkFilled();
         } else {
             this.setState({lockdownEnd: this.state.lockdownEnd});
         }
+        this.checkFilled();
     }
 
     onMaskChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, "");
-        if (value >= 0 && value <= 100 && !value.includes("e")) {
+        if (value >= 0 && value <= 100) {
             this.setState({maskStart: value});
             this.checkFilled();
         } else {
             this.setState({maskStart: this.state.maskStart});
         }
-        if (value >= this.state.maskStart) {
+        if (parseInt(value) >= this.state.maskStart) {
             this.setState({maskEnd: parseInt(value) + 1})
         }
     }
 
     onMaskEndChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, "");
-        if (value >= 0 && value <= 100 && !value.includes("e")) {
-            this.setState({maskStart: value});
-            this.checkFilled();
+        let intValue = parseInt(value);
+        if (intValue <= this.state.maskStart) {
+            let newVal = parseInt(value) - 1
+            if (newVal < 0) {
+                this.setState({maskStart: "", maskEnd: ""})
+            } else {
+                this.setState({maskStart: newVal, maskEnd: value})
+            }
+        }else if (value === "") {
+            this.setState({maskStart: "", maskEnd: ""})
+        } else if (intValue >= 0 && intValue <= 100) {
+            this.setState({maskEnd: value});
         } else {
-            this.setState({maskStart: this.state.maskStart});
+            this.setState({maskEnd: this.state.lockdownEnd});
         }
+        this.checkFilled();
     }
 
     startSim = () => {
