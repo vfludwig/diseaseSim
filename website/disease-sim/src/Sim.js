@@ -84,6 +84,9 @@ class Sim extends React.Component {
         } else {
             this.setState({lockdownStart: this.state.lockdownStart});
         }
+        if (value >= this.state.lockdownEnd) {
+            this.setState({lockdownEnd: parseInt(value) + 1})
+        }
     }
 
     onLockdownEndChange = (e) => {
@@ -97,6 +100,19 @@ class Sim extends React.Component {
     }
 
     onMaskChange = (e) => {
+        const value = e.target.value.replace(/[^0-9]/g, "");
+        if (value >= 0 && value <= 100 && !value.includes("e")) {
+            this.setState({maskStart: value});
+            this.checkFilled();
+        } else {
+            this.setState({maskStart: this.state.maskStart});
+        }
+        if (value >= this.state.maskStart) {
+            this.setState({maskEnd: parseInt(value) + 1})
+        }
+    }
+
+    onMaskEndChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, "");
         if (value >= 0 && value <= 100 && !value.includes("e")) {
             this.setState({maskStart: value});
@@ -231,12 +247,46 @@ class Sim extends React.Component {
                                 marginRight: "2em",
                                 width: 199
                             }}
+                            name="lockdownEnd"
+                            label="End of Lockdown"
+                            placeholder="0-100"
+                            type="number"
+                            value={this.state.lockdownEnd}
+                            onChange={this.onLockdownEndChange}
+                            inputProps={{
+                                "min": 0,
+                                "max": 100
+                            }}
+                            onKeyDown={this.onKeyDown}
+                        />
+                        <TextField
+                            style={{
+                                marginRight: "2em",
+                                width: 199
+                            }}
                             name="maskStart"
                             label="Start of Mask Mandate"
                             placeholder="0-100"
                             type="number"
                             value={this.state.maskStart}
                             onChange={this.onMaskChange}
+                            inputProps={{
+                                "min": 0,
+                                "max": 100
+                            }}
+                            onKeyDown={this.onKeyDown}
+                        />
+                        <TextField
+                            style={{
+                                marginRight: "2em",
+                                width: 199
+                            }}
+                            name="maskEnd"
+                            label="End of Mask Mandate"
+                            placeholder="0-100"
+                            type="number"
+                            value={this.state.maskEnd}
+                            onChange={this.onMaskEndChange}
                             inputProps={{
                                 "min": 0,
                                 "max": 100
