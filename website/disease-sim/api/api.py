@@ -8,6 +8,8 @@ import tkinter as tk
 import random
 import time
 
+# start flask server: cd api -> venv\Scripts\activate -> flask startflask ru
+
 app = Flask(__name__)
 CORS(app)
 
